@@ -1,0 +1,6 @@
+server:
+  build: .
+  env_file: .env
+  command: ./app
+  ports:
+    - "1983:1983"
