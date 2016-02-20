@@ -10,13 +10,24 @@ import (
 	"github.com/codequest-eu/burnafterreading/storage"
 )
 
-func getStorage() (burnafterreading.Storage, error) {
+func getS3Storage() (burnafterreading.Storage, error) {
 	return storage.S3Storage(
 		os.Getenv("AWS_ACCESS_KEY_ID"),
 		os.Getenv("AWS_SECRET_ACCESS_KEY"),
 		os.Getenv("AWS_REGION"),
 		os.Getenv("AWS_BUCKET"),
 	)
+}
+
+func getFileStorage() (burnafterreading.Storage, error) {
+	return storage.LocalFileStorage(os.Getenv("BASE_PATH"))
+}
+
+func getStorage() (burnafterreading.Storage, error) {
+	if os.Getenv("BASE_PATH") != "" {
+		return getFileStorage()
+	}
+	return getS3Storage()
 }
 
 func getAuth() burnafterreading.Authorizer {
