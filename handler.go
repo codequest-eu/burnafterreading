@@ -45,7 +45,7 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 	if err := r.ParseForm(); err != nil {
 		return err
 	}
-	key := r.Form.Get("")
+	key := r.Form.Get("key")
 	if key == "" {
 		return errNotFound
 	}
@@ -69,6 +69,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if h.ErrorHandler == nil {
 		log.Printf("Unhandled error: %v", err)
+		return
 	}
 	h.ErrorHandler(err)
 }
