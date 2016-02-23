@@ -1,7 +1,9 @@
 package burnafterreading
 
 import (
+	"crypto/md5"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -49,6 +51,7 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 	if key == "" {
 		return errNotFound
 	}
+	key = keyAsHash(key)
 	if r.Method == "GET" {
 		return h.handleGET(w, key)
 	}
@@ -56,6 +59,10 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 		return h.handlePUT(w, r, key)
 	}
 	return errNotFound
+}
+
+func keyAsHash(key string) string {
+	return fmt.Sprintf("%x", md5.Sum([]byte(key)))
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
