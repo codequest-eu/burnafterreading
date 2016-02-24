@@ -51,6 +51,7 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 	if key == "" {
 		return errNotFound
 	}
+	log.Printf("[%s] with key %q from %q", r.Method, key, r.RemoteAddr)
 	key = keyAsHash(key)
 	if r.Method == "GET" {
 		return h.handleGET(w, key)
