@@ -5,12 +5,12 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/codequest-eu/burnafterreading"
-	"github.com/codequest-eu/burnafterreading/authorizer"
-	"github.com/codequest-eu/burnafterreading/storage"
+	"github.com/codequest-eu/burnafterreading/lib"
+	"github.com/codequest-eu/burnafterreading/lib/authorizer"
+	"github.com/codequest-eu/burnafterreading/lib/storage"
 )
 
-func getS3Storage() (burnafterreading.Storage, error) {
+func getS3Storage() (lib.Storage, error) {
 	return storage.S3Storage(
 		os.Getenv("AWS_ACCESS_KEY_ID"),
 		os.Getenv("AWS_SECRET_ACCESS_KEY"),
@@ -19,18 +19,18 @@ func getS3Storage() (burnafterreading.Storage, error) {
 	)
 }
 
-func getFileStorage() (burnafterreading.Storage, error) {
+func getFileStorage() (lib.Storage, error) {
 	return storage.LocalFileStorage(os.Getenv("BASE_PATH"))
 }
 
-func getStorage() (burnafterreading.Storage, error) {
+func getStorage() (lib.Storage, error) {
 	if os.Getenv("BASE_PATH") != "" {
 		return getFileStorage()
 	}
 	return getS3Storage()
 }
 
-func getAuth() burnafterreading.Authorizer {
+func getAuth() lib.Authorizer {
 	return authorizer.BasicHTTPAuthorizer(os.Getenv("USER"), os.Getenv("PASS"))
 }
 
@@ -48,7 +48,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("error initializing storage: %v", err)
 	}
-	http.Handle("/", &burnafterreading.Handler{
+	http.Handle("/", &lib.Handler{
 		Authorizer: getAuth(),
 		Storage:    storageEngine,
 	})

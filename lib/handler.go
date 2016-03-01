@@ -1,4 +1,4 @@
-package burnafterreading
+package lib
 
 import (
 	"crypto/md5"
