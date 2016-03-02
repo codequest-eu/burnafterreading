@@ -1,4 +1,4 @@
-package burnafterreading
+package lib
 
 import (
 	"io"
@@ -21,4 +21,7 @@ type Storage interface {
 
 	// Get provides a source the data for a given key.
 	Get(key string) (io.ReadCloser, error)
+
+	// Delete removes an entry for a given key.
+	Delete(key string) error
 }

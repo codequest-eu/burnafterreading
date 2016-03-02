@@ -31,17 +31,11 @@ func (lfs *localFileStorage) Put(key string) (io.WriteCloser, error) {
 
 // Get provides a reader for reading the entry from a local file.
 func (lfs *localFileStorage) Get(key string) (io.ReadCloser, error) {
-	path := lfs.pathFor(key)
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	return &readCloserWithCallback{
-		file,
-		func() error {
-			return os.Remove(path)
-		},
-	}, nil
+	return os.Open(lfs.pathFor(key))
+}
+
+func (lfs *localFileStorage) Delete(key string) error {
+	return os.Remove(lfs.pathFor(key))
 }
 
 func (lfs *localFileStorage) pathFor(key string) string {

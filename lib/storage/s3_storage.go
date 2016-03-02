@@ -31,7 +31,7 @@ func S3Storage(keyID, key, regionName, bucket string) (*s3Storage, error) {
 	return &s3Storage{s3.New(auth, region).Bucket(bucket)}, nil
 }
 
-// Put provides a writer for saving the entry as a local file.
+// Put provides a writer for saving the entry as an S3 file.
 func (s3s *s3Storage) Put(key string) (io.WriteCloser, error) {
 	var buffer bytes.Buffer
 	return &writerWithCallback{
@@ -42,16 +42,12 @@ func (s3s *s3Storage) Put(key string) (io.WriteCloser, error) {
 	}, nil
 }
 
-// Get provides a reader for reading the entry from a local file.
+// Get provides a reader for reading the entry from an S3 file.
 func (s3s *s3Storage) Get(key string) (io.ReadCloser, error) {
-	reader, err := s3s.bucket.GetReader(key)
-	if err != nil {
-		return nil, err
-	}
-	return &readCloserWithCallback{
-		reader,
-		func() error {
-			return s3s.bucket.Del(key)
-		},
-	}, nil
+	return s3s.bucket.GetReader(key)
+}
+
+// Delete removes an entry stored in an S3 file.
+func (s3s *s3Storage) Delete(key string) error {
+	return s3s.bucket.Del(key)
 }

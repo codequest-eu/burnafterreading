@@ -1,4 +1,4 @@
-package burnafterreading
+package lib
 
 import (
 	"crypto/md5"
@@ -43,6 +43,10 @@ func (h *Handler) handleGET(w http.ResponseWriter, key string) error {
 	return err
 }
 
+func (h *Handler) handleDELETE(w http.ResponseWriter, key string) error {
+	return h.Storage.Delete(key)
+}
+
 func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 	if err := r.ParseForm(); err != nil {
 		return err
@@ -53,11 +57,14 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 	}
 	log.Printf("[%s] with key %q from %q", r.Method, key, r.RemoteAddr)
 	key = keyAsHash(key)
+	if r.Method == "PUT" {
+		return h.handlePUT(w, r, key)
+	}
 	if r.Method == "GET" {
 		return h.handleGET(w, key)
 	}
-	if r.Method == "PUT" {
-		return h.handlePUT(w, r, key)
+	if r.Method == "DELETE" {
+		return h.handleDELETE(w, key)
 	}
 	return errNotFound
 }
