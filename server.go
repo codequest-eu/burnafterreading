@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/codequest-eu/burnafterreading/internal/authorizer"
+	"github.com/codequest-eu/burnafterreading/internal/storage"
 	"github.com/codequest-eu/burnafterreading/lib"
-	"github.com/codequest-eu/burnafterreading/lib/authorizer"
-	"github.com/codequest-eu/burnafterreading/lib/storage"
 )
 
 func getS3Storage() (lib.Storage, error) {
