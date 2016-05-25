@@ -24,6 +24,11 @@ func (c *clientImpl) Get(key string) (io.ReadCloser, error) {
 	return res.Body, nil
 }
 
+func (c *clientImpl) Delete(key string) error {
+	_, err := c.dial("DELETE", key, nil)
+	return err
+}
+
 func (c *clientImpl) Put(key string, source io.Reader) error {
 	_, err := c.dial("PUT", key, source)
 	return err
