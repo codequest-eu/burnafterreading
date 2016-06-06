@@ -48,14 +48,17 @@ func (h *Handler) handleDELETE(w http.ResponseWriter, key string) error {
 }
 
 func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
-	if err := r.ParseForm(); err != nil {
-		return err
-	}
-	key := r.Form.Get("key")
+	key := r.URL.Query().Get(keyName)
 	if key == "" {
 		return errNotFound
 	}
-	log.Printf("[%s] with key %q from %q", r.Method, key, r.RemoteAddr)
+	log.Printf(
+		"[%s] with key %q from %q, %d bytes",
+		r.Method,
+		key,
+		r.RemoteAddr,
+		r.ContentLength,
+	)
 	key = keyAsHash(key)
 	if r.Method == "PUT" {
 		return h.handlePUT(w, r, key)
@@ -83,7 +86,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if h.ErrorHandler == nil {
-		log.Printf("Unhandled error: %v", err)
+		log.Printf("Unhandled error: %v, URL %q", err, r.RequestURI)
 		return
 	}
 	h.ErrorHandler(err)
