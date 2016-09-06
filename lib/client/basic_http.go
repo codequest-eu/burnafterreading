@@ -8,12 +8,21 @@ import (
 
 type clientImpl struct {
 	url, username, password string
+	client                  *http.Client
 }
 
 // BasicHTTP is a client for the server using Basic HTTP Auth as it's
 // authorization mechanism.
 func BasicHTTP(url, username, password string) *clientImpl {
-	return &clientImpl{url, username, password}
+	return NewClient(url, WithAuth(username, password))
+}
+
+func NewClient(url string, options ...Option) *clientImpl {
+	ret := &clientImpl{url: url, client: http.DefaultClient}
+	for _, option := range options {
+		option(ret)
+	}
+	return ret
 }
 
 func (c *clientImpl) Get(key string) (io.ReadCloser, error) {
@@ -40,7 +49,7 @@ func (c *clientImpl) dial(method, key string, data io.Reader) (*http.Response, e
 		return nil, err
 	}
 	req.SetBasicAuth(c.username, c.password)
-	res, err := http.DefaultClient.Do(req)
+	res, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
