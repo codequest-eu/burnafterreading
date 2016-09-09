@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -36,11 +37,27 @@ func getAuth() lib.Authorizer {
 
 func runServer() error {
 	addr := os.Getenv("ADDR")
-	log.Printf("Starting HTTP server bound to %q", addr)
 	if os.Getenv("USE_SSL") == "" {
+		log.Printf("Starting HTTP server bound to %q", addr)
 		return http.ListenAndServe(addr, nil)
 	}
-	return http.ListenAndServeTLS(addr, "cert.pem", "cert.key", nil)
+	log.Printf("Starting HTTPS server bound to %q", addr)
+	certificate, err := tls.X509KeyPair(
+		[]byte(os.Getenv("CERT_PEM")),
+		[]byte(os.Getenv("CERT_KEY")),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+	listener, err := tls.Listen(
+		"tcp",
+		addr,
+		&tls.Config{Certificates: []tls.Certificate{certificate}},
+	)
+	if err != nil {
+		return err
+	}
+	return http.Serve(listener, nil)
 }
 
 func main() {
