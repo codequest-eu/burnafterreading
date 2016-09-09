@@ -17,7 +17,6 @@ RUN go build
 ENV APP_HOME=/app
 RUN mkdir $APP_HOME
 RUN mv $CODE_HOME/burnafterreading $APP_HOME/app
-RUN mv $CODE_HOME/cert_setup.sh $APP_HOME/
 WORKDIR $APP_HOME
 
 # Get rid of build dependencies to keep the container size small.
