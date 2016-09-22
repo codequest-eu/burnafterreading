@@ -12,6 +12,7 @@ import (
 )
 
 func getS3Storage() (lib.Storage, error) {
+	log.Printf("Using S3 storage backend")
 	return storage.S3Storage(
 		os.Getenv("AWS_ACCESS_KEY_ID"),
 		os.Getenv("AWS_SECRET_ACCESS_KEY"),
@@ -21,6 +22,7 @@ func getS3Storage() (lib.Storage, error) {
 }
 
 func getFileStorage() (lib.Storage, error) {
+	log.Printf("Using local file storage backend")
 	return storage.LocalFileStorage(os.Getenv("BASE_PATH"))
 }
 
@@ -32,6 +34,7 @@ func getStorage() (lib.Storage, error) {
 }
 
 func getAuth() lib.Authorizer {
+	log.Printf("Using Basic HTTP authorization")
 	return authorizer.BasicHTTPAuthorizer(os.Getenv("USER"), os.Getenv("PASS"))
 }
 

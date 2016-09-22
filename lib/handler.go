@@ -82,9 +82,9 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		return
 	}
-	if h.ErrorHandler == nil {
-		log.Printf("Unhandled error: %v", err)
-		return
+	log.Printf("Error: %v", err)
+	w.WriteHeader(http.StatusInternalServerError)
+	if h.ErrorHandler != nil {
+		h.ErrorHandler(err)
 	}
-	h.ErrorHandler(err)
 }

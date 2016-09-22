@@ -22,13 +22,15 @@ func (wc *writerWithCallback) Close() error {
 	return wc.callback()
 }
 
-func S3Storage(keyID, key, regionName, bucket string) (*s3Storage, error) {
+func S3Storage(keyID, key, regionName, bucketName string) (*s3Storage, error) {
 	region, exists := aws.Regions[regionName]
 	if !exists {
 		return nil, errors.New("invalid region")
 	}
 	auth := aws.Auth{AccessKey: keyID, SecretKey: key, Token: ""}
-	return &s3Storage{s3.New(auth, region).Bucket(bucket)}, nil
+	bucket := s3.New(auth, region).Bucket(bucketName)
+	_, err := bucket.List("", "/", "", 1)
+	return &s3Storage{bucket}, err
 }
 
 // Put provides a writer for saving the entry as an S3 file.
