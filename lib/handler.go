@@ -5,8 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
+
+	log "github.com/Sirupsen/logrus"
 )
 
 var (
@@ -55,7 +56,7 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 	if key == "" {
 		return errNotFound
 	}
-	log.Printf("[%s] with key %q from %q", r.Method, key, r.RemoteAddr)
+	log.Infof("[%s] with key %q from %q", r.Method, key, r.RemoteAddr)
 	key = keyAsHash(key)
 	if r.Method == "PUT" {
 		return h.handlePUT(w, r, key)
@@ -82,7 +83,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		return
 	}
-	log.Printf("Error: %v", err)
+	log.Errorf("Error: %v", err)
 	w.WriteHeader(http.StatusInternalServerError)
 	if h.ErrorHandler != nil {
 		h.ErrorHandler(err)
