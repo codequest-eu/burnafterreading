@@ -1,9 +1,7 @@
 package lib
 
 import (
-	"crypto/md5"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -57,7 +55,6 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 		return errNotFound
 	}
 	log.Infof("[%s] with key %q from %q", r.Method, key, r.RemoteAddr)
-	key = keyAsHash(key)
 	if r.Method == "PUT" {
 		return h.handlePUT(w, r, key)
 	}
@@ -68,10 +65,6 @@ func (h *Handler) serve(w http.ResponseWriter, r *http.Request) error {
 		return h.handleDELETE(w, key)
 	}
 	return errNotFound
-}
-
-func keyAsHash(key string) string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(key)))
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
